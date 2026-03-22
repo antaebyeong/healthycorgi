@@ -321,9 +321,19 @@
   @media (max-width: 600px) {
     header { padding: 14px 16px; }
     .header-title h1 { font-size: 18px; }
-    main { padding: 20px 14px 50px; }
-    .chart-wrap { height: 320px; }
+    main { padding: 20px 10px 50px; }
+    .chart-wrap { height: 420px; }
     .stat-value { font-size: 26px; }
+
+    table { min-width: unset; width: 100%; }
+    thead th { padding: 8px 6px; font-size: 10px; letter-spacing: 0; }
+    thead th.num { width: 28px; }
+    tbody td { padding: 9px 6px; font-size: 12px; white-space: nowrap; }
+    td.rank-cell { width: 28px; font-size: 11px; }
+    td.name-cell { font-size: 12px; }
+    td.score-cell { font-size: 13px; }
+    td.total-cell { font-size: 13px; }
+    .table-wrap { overflow-x: hidden; }
   }
 </style>
 </head>
@@ -470,67 +480,88 @@ function renderAll() {
 
   // 차트
   const isMobile = window.innerWidth < 600;
-  const chartCount = isMobile ? 10 : 20;
+  const chartCount = isMobile ? 15 : 20;
   const chartData = sorted.slice(0, chartCount);
-
-  // 모바일: 막대 위에 점수 숫자 표시 플러그인
-  const topLabelPlugin = {
-    id: 'topLabels',
-    afterDatasetsDraw(chart) {
-      const c = chart.ctx;
-      c.save();
-      c.font = 'bold 9px sans-serif';
-      c.fillStyle = '#f0ece4';
-      c.textAlign = 'center';
-      chart.data.datasets[0].data.forEach((val, i) => {
-        const bar = chart.getDatasetMeta(0).data[i];
-        c.fillText(val, bar.x, bar.y - 4);
-      });
-      c.restore();
-    }
-  };
 
   const ctx = document.getElementById('rankChart').getContext('2d');
   if (chartInstance) chartInstance.destroy();
-  chartInstance = new Chart(ctx, {
-    type: 'bar',
-    plugins: isMobile ? [topLabelPlugin] : [],
-    data: {
-      labels: chartData.map(m => m.name),
-      datasets: [{
-        label: '1분기 상점',
-        data: chartData.map(m => m.q1),
-        backgroundColor: chartData.map((m, i) => {
-          if (i === 0) return '#FFD700';
-          if (i === 1) return '#C0C0C0';
-          if (i === 2) return '#CD7F32';
-          return '#f5a623aa';
-        }),
-        borderRadius: 6,
-        borderSkipped: false,
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        tooltip: { callbacks: { label: ctx => `상점: ${ctx.parsed.y}점` } }
+
+  if (isMobile) {
+    // 모바일: 가로 막대 차트
+    chartInstance = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: chartData.map(m => m.name),
+        datasets: [{
+          label: '1분기 상점',
+          data: chartData.map(m => m.q1),
+          backgroundColor: chartData.map((m, i) => {
+            if (i === 0) return '#FFD700';
+            if (i === 1) return '#C0C0C0';
+            if (i === 2) return '#CD7F32';
+            return '#f5a623aa';
+          }),
+          borderRadius: 4,
+          borderSkipped: false,
+        }]
       },
-      scales: {
-        x: {
-          ticks: {
-            display: !isMobile,
-            color: '#999',
-            font: { size: 10, family: 'Noto Sans KR' },
-            maxRotation: 45
-          },
-          grid: { color: '#2e2e2e' }
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: { label: ctx => `상점: ${ctx.parsed.x}점` } }
         },
-        y: { ticks: { color: '#999', font: { size: 11 } }, grid: { color: '#2e2e2e' }, beginAtZero: true }
+        scales: {
+          x: {
+            ticks: { color: '#999', font: { size: 10 } },
+            grid: { color: '#2e2e2e' },
+            beginAtZero: true
+          },
+          y: {
+            ticks: { color: '#f0ece4', font: { size: 11, family: 'Noto Sans KR' } },
+            grid: { color: '#2e2e2e' }
+          }
+        }
       }
-    }
-  });
+    });
+  } else {
+    // PC: 세로 막대 차트
+    chartInstance = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: chartData.map(m => m.name),
+        datasets: [{
+          label: '1분기 상점',
+          data: chartData.map(m => m.q1),
+          backgroundColor: chartData.map((m, i) => {
+            if (i === 0) return '#FFD700';
+            if (i === 1) return '#C0C0C0';
+            if (i === 2) return '#CD7F32';
+            return '#f5a623aa';
+          }),
+          borderRadius: 6,
+          borderSkipped: false,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: { label: ctx => `상점: ${ctx.parsed.y}점` } }
+        },
+        scales: {
+          x: {
+            ticks: { color: '#999', font: { size: 10, family: 'Noto Sans KR' }, maxRotation: 45 },
+            grid: { color: '#2e2e2e' }
+          },
+          y: { ticks: { color: '#999', font: { size: 11 } }, grid: { color: '#2e2e2e' }, beginAtZero: true }
+        }
+      }
+    });
+  }
 
   // 테이블
   const tbody = document.getElementById('memberTable');
