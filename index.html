@@ -343,7 +343,7 @@
   <img src="https://i.imgur.com/placeholder.png" id="logoImg" alt="헬시코기" onerror="this.style.display='none'">
   <div class="header-title">
     <h1>🐕 헬시코기</h1>
-    <span>2026 상벌점 현황</span>
+    <span>2026 2분기 상벌점 현황</span>
   </div>
   <div class="header-badge" id="memberCount">— 명</div>
 </header>
@@ -364,7 +364,7 @@
       </div>
       <div class="result-stats">
         <div class="stat-box">
-          <div class="stat-label">1분기 상점</div>
+          <div class="stat-label">2분기 상점</div>
           <div class="stat-value neutral" id="resultQ1"></div>
         </div>
         <div class="stat-box">
@@ -378,7 +378,7 @@
 
   <!-- 차트 -->
   <section class="chart-section">
-    <div class="section-title">🏆 1분기 상점 순위</div>
+    <div class="section-title">🏆 2분기 상점 순위</div>
     <div class="chart-wrap">
       <canvas id="rankChart"></canvas>
     </div>
@@ -393,7 +393,7 @@
           <tr>
             <th class="num">순위</th>
             <th>이름</th>
-            <th class="score-col">1분기 상점</th>
+            <th class="score-col">2분기 상점</th>
             <th class="score-col">상벌점 합계 (-4점 시 제명😥)</th>
           </tr>
         </thead>
@@ -431,8 +431,8 @@ async function loadData() {
 function parseCSV(text) {
   const lines = text.split('\n').map(l => l.split(','));
   raw = [];
-  // 헤더 찾기: 연번, 벌점누적, 상점누적, 상벌점합계, 1분기상점, 이름
-  // 시트 컬럼: 0=연번, 1=벌점누적, 2=상점누적, 3=상벌점합계, 4=1분기상점, 5=이름
+  // 헤더 찾기: 연번, 벌점누적, 상점누적, 상벌점합계, 2분기상점, 이름
+  // 시트 컬럼: 0=연번, 1=벌점누적, 2=상점누적, 3=상벌점합계, 4=2분기상점, 5=이름
   for (let i = 2; i < lines.length; i++) {
     const row = lines[i];
     if (!row[5] || !row[5].trim()) continue;
@@ -493,7 +493,7 @@ function renderAll() {
       data: {
         labels: chartData.map(m => m.name),
         datasets: [{
-          label: '1분기 상점',
+          label: '2분기 상점',
           data: chartData.map(m => m.q1),
           backgroundColor: chartData.map((m, i) => {
             if (i === 0) return '#FFD700';
@@ -533,7 +533,7 @@ function renderAll() {
       data: {
         labels: chartData.map(m => m.name),
         datasets: [{
-          label: '1분기 상점',
+          label: '2분기 상점',
           data: chartData.map(m => m.q1),
           backgroundColor: chartData.map((m, i) => {
             if (i === 0) return '#FFD700';
